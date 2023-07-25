@@ -4,28 +4,36 @@ import {
   useForegroundPermissions,
   PermissionStatus,
 } from "expo-location";
-import { useNavigation } from "@react-navigation/native";
-import { useState } from "react";
+import { useNavigation, useRoute } from "@react-navigation/native";
+import { useEffect, useState } from "react";
+const API_KEY='';
 const url = (coord) => {
-  const { long, lat } = coord;
-  console.log(coord);
   if (coord) {
-    return `https://maps.geoapify.com/v1/staticmap?style=osm-bright-smooth&width=600&height=400&center=lonlat%3A${long}%2C${lat}&zoom=14.3497&marker=lonlat%3A${long}%2C${lat}%3Btype%3Aawesome&apiKey=${YOUR_API_KEY}`;
+    const { long, lat } = coord;
+    return `https://maps.geoapify.com/v1/staticmap?style=osm-bright-smooth&width=600&height=400&center=lonlat%3A${long}%2C${lat}&zoom=14.3497&marker=lonlat%3A${long}%2C${lat}%3Btype%3Aawesome&apiKey=${API_KEY}`;
   }
 };
-const LocationPick = (props) => {
+const LocationPick = ({ setlocation }) => {
+  const router = useRoute();
+  const [coord, setcoord] = useState();
+  useEffect(() => {
+    if (router.params) {
+      setcoord({
+        long: router.params.coords.long,
+        lat: router.params.coords.lat,
+      });
+      setlocation({
+        long: router.params.coords.long,
+        lat: router.params.coords.lat,
+      });
+    }
+  }, [router.params]);
   const nav = useNavigation();
-  const [coord, setcoord] = useState({
-    long: "",
-    lat: "",
-  });
-  const [maplink, setmaplink] = useState(false);
   const [locationPermissionInformation, requestPermission] =
     useForegroundPermissions();
   async function verifypermission() {
     if (locationPermissionInformation === PermissionStatus.UNDETERMINED) {
       const permissionres = await requestPermission();
-      console.log(permissionres);
       return permissionres.granted;
     }
     if (locationPermissionInformation === PermissionStatus.DENIED) {
@@ -39,29 +47,41 @@ const LocationPick = (props) => {
   }
   const getlocation = async () => {
     const haspermission = await verifypermission();
-    console.log(haspermission);
     if (!haspermission) {
       return;
     }
-    const location = await getCurrentPositionAsync({ accuracy: 6 });
-    console.log(location);
-    setcoord({
-      long: location.coords.longitude,
-      lat: location.coords.latitude,
-    });
-    setmaplink(true);
+    try {
+      const location = await getCurrentPositionAsync({ accuracy: 6 });
+      setcoord({
+        long: location.coords.longitude,
+        lat: location.coords.latitude,
+      });
+      setlocation({
+        long: location.coords.longitude,
+        lat: location.coords.latitude,
+      });
+    } catch (err) {
+      Alert.alert(
+        "Device Incomptibility",
+        "Your Device is incompatible to get live location. Please select location from map."
+      );
+      return;
+    }
   };
   const pickonmap = () => {
     nav.navigate("Map");
-    setmaplink(true);
   };
   return (
     <View>
       <View style={styles.preview}>
-        <Image
-          source={!props ? { uri: url(coord) } : { uri: url(props.coords) }}
-          style={{ height: "100%", width: "100%", borderRadius: 4 }}
-        />
+        {coord ? (
+          <Image
+            source={{ uri: url(coord) }}
+            style={{ height: "100%", width: "100%", borderRadius: 4 }}
+          />
+        ) : (
+          <Text>Select Location!</Text>
+        )}
       </View>
       <View style={styles.action}>
         <Button title="Locate User" onPress={getlocation} />
@@ -79,7 +99,7 @@ const styles = StyleSheet.create({
     marginVertical: 8,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "aqaublue",
+    backgroundColor: "#D4E2D4",
     borderRadius: 4,
   },
   action: {

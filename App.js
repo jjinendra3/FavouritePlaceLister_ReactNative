@@ -6,9 +6,13 @@ import Map from "./screens/Map";
 import Adder from "./screens/Adder";
 import Details from "./screens/Details";
 import { Ionicons } from "@expo/vector-icons";
+import { useEffect } from "react";
+import { init } from "./database";
 const Stack = createNativeStackNavigator();
-const places = [];
 export default function App() {
+  useEffect(() => {
+    init();
+  }, []);
   return (
     <NavigationContainer>
       <StatusBar style="auto" />
@@ -18,14 +22,10 @@ export default function App() {
           headerTintColor: "black",
           headerTitleAlign: "center",
         }}
-        containerStyle={{
-          backgroundColor: "#146C94",
-        }}
       >
         <Stack.Screen
           name="HomeScreen"
           component={Home}
-          initialParams={{ places }}
           options={({ navigation }) => ({
             headerRight: () => {
               return (
