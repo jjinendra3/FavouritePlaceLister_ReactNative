@@ -1,8 +1,12 @@
 import React, { useEffect, useState } from "react";
 import MapView, { Marker } from "react-native-maps";
 import { Alert, Button } from "react-native";
-const Map = ({ navigation }) => {
-  const [first, setfirst] = useState();
+const Map = ({ navigation, route }) => {
+  const initlocation = route.params && {
+    long: route.params.long,
+    lat: route.params.lat,
+  };
+  const [first, setfirst] = useState(initlocation);
   useEffect(() => {
     function navigator() {
       if (!first) {
@@ -11,16 +15,18 @@ const Map = ({ navigation }) => {
       }
       navigation.navigate("AddPlace", { coords: first });
     }
-    navigation.setOptions({
-      headerRight: () => {
-        return <Button title="Select" onPress={navigator} />;
-      },
-    });
+    if (!route.params) {
+      navigation.setOptions({
+        headerRight: () => {
+          return <Button title="Select" onPress={navigator} />;
+        },
+      });
+    }
   }, [navigation, first]);
 
   const region = {
-    latitude: 28.535517,
-    longitude: 77.391029,
+    latitude: initlocation ? initlocation.lat : 28.535517,
+    longitude: initlocation ? initlocation.long : 77.391029,
     latitudeDelta: 0.0922,
     longitudeDelta: 0.0421,
   };
@@ -29,10 +35,13 @@ const Map = ({ navigation }) => {
       initialRegion={region}
       style={{ flex: 1 }}
       onPress={(event) => {
-        setfirst({
-          lat: event.nativeEvent.coordinate.latitude,
-          long: event.nativeEvent.coordinate.longitude,
-        });
+        {
+          !route.params &&
+            setfirst({
+              lat: event.nativeEvent.coordinate.latitude,
+              long: event.nativeEvent.coordinate.longitude,
+            });
+        }
       }}
     >
       {first && (

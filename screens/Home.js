@@ -1,8 +1,16 @@
-import { View, Text, FlatList, StyleSheet, Image } from "react-native";
+import {
+  View,
+  Text,
+  FlatList,
+  StyleSheet,
+  Image,
+  Pressable,
+} from "react-native";
 import React, { useState, useEffect } from "react";
-import { fetcher } from "../database";
+import { fetcher, particular } from "../database";
 import { useIsFocused } from "@react-navigation/native";
-const Home = () => {
+
+const Home = ({ navigation }) => {
   const focus = useIsFocused();
   const [places, setplaces] = useState();
   useEffect(() => {
@@ -28,7 +36,12 @@ const Home = () => {
         data={places}
         renderItem={(elements) => {
           return (
-            <>
+            <Pressable
+              onPress={async () => {
+                const obj = await particular(elements.item.id);
+                navigation.navigate("Details", { obj });
+              }}
+            >
               <View style={styles.item}>
                 <Image
                   source={{ uri: elements.item.img }}
@@ -39,20 +52,22 @@ const Home = () => {
                     alignItems: "center",
                     justifyContent: "center",
                     padding: 5,
+                    marginHorizontal: 5,
                   }}
                 >
                   <Text
                     style={{
                       fontWeight: "bold",
                       fontSize: 18,
+                      marginHorizontal: 5,
                     }}
                   >
                     {elements.item.title}
                   </Text>
-                  <Text style={{ fontSize: 12 }}>{elements.item.address}</Text>
+                  <Text style={{ fontSize: 10 }}>{elements.item.address}</Text>
                 </View>
               </View>
-            </>
+            </Pressable>
           );
         }}
       />
@@ -65,7 +80,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: "center",
-    alignItems: "center",
   },
   text: {
     fontWeight: "bold",

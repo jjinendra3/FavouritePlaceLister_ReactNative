@@ -1,5 +1,6 @@
 node_modules/
 .expo/
+/API_KEY.txt
 dist/
 npm-debug.*
 *.jks
