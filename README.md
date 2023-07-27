@@ -3,10 +3,6 @@
   <p align="center">
     An awesome app to save the image and location of your favourite places in the world!
     <br />
-    ·
-    <a href="https://github.com/othneildrew/Best-README-Template/issues">Report Bug</a>
-    ·
-    <a href="https://github.com/othneildrew/Best-README-Template/issues">Request Feature</a>
   </p>
 </div>
 
@@ -66,7 +62,7 @@ Favourite Place Lister is your go-to app to save your favourite locations on you
    ```sh
    npm install
    ```
-4. Enter your API in `LocationPick.js` and 'Adder.js'
+4. Enter your API in `LocationPick.js` and `Adder.js`
    ```js
    const API_KEY = 'ENTER YOUR API';
    ```
