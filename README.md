@@ -56,7 +56,7 @@ Favourite Place Lister is your go-to app to save your favourite locations on you
 1. Get a free API Key at [https://www.geoapify.com/](https://www.geoapify.com/)
 2. Clone the repo
    ```sh
-   git clone https://github.com/your_username_/Project-Name.git
+   git clone https://github.com/your_username_/FavouritePlaceLister_ReactNative.git
    ```
 3. Install NPM packages
    ```sh
